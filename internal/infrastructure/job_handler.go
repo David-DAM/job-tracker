@@ -1,7 +1,9 @@
 package infrastructure
 
 import (
+	"errors"
 	"job-tracker/internal/application"
+	"job-tracker/internal/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,8 +29,8 @@ func (h *JobHandler) RegisterRoutes(r *gin.Engine) {
 
 func (h *JobHandler) GetJobs(c *gin.Context) {
 	jobs, err := h.service.GetAllJobs()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusOK, jobs)
@@ -37,18 +39,22 @@ func (h *JobHandler) GetJobs(c *gin.Context) {
 func (h *JobHandler) GetJobsByStatus(c *gin.Context) {
 	status := c.Param("status")
 	jobs, err := h.service.GetJobsByStatus(status)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusOK, jobs)
 }
 
 func (h *JobHandler) GetJob(c *gin.Context) {
-	id := c.Param("id")
-	job, err := h.service.GetJob(uuid.MustParse(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	id, ok := parseUUID(c, c.Param("id"))
+
+	if !ok {
+		return
+	}
+	job, err := h.service.GetJob(id)
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusOK, job)
@@ -59,13 +65,13 @@ func (h *JobHandler) CreateJob(c *gin.Context) {
 	var request application.CreateJobRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: domain.ErrInvalidRequest.Error()})
 		return
 	}
 
 	job, err := h.service.CreateJob(&request)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusCreated, job)
@@ -74,23 +80,52 @@ func (h *JobHandler) CreateJob(c *gin.Context) {
 func (h *JobHandler) UpdateJob(c *gin.Context) {
 	var request application.UpdateJobRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: domain.ErrInvalidRequest.Error()})
 		return
 	}
 	job, err := h.service.UpdateJob(&request)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusOK, job)
 }
 
 func (h *JobHandler) DeleteJob(c *gin.Context) {
-	id := c.Param("id")
-	err := h.service.DeleteJob(uuid.MustParse(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+
+	id, ok := parseUUID(c, c.Param("id"))
+
+	if !ok {
+		return
+	}
+	err := h.service.DeleteJob(id)
+	isError := hasError(err, c)
+	if isError {
 		return
 	}
 	c.JSON(http.StatusNoContent, gin.H{"message": "Job deleted successfully"})
+}
+
+func parseUUID(c *gin.Context, idStr string) (uuid.UUID, bool) {
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: domain.ErrInvalidRequest.Error()})
+		return uuid.Nil, false
+	}
+	return id, true
+}
+
+func hasError(err error, c *gin.Context) bool {
+	if err == nil {
+		return false
+	}
+	switch {
+	case errors.Is(err, domain.ErrJobNotFound):
+		c.JSON(http.StatusNotFound, domain.ErrorResponse{Error: domain.ErrJobNotFound.Error()})
+	case errors.Is(err, domain.ErrInvalidRequest):
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: domain.ErrInvalidRequest.Error()})
+	default:
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: domain.ErrInternalServer.Error()})
+	}
+	return true
 }

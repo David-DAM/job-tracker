@@ -1,20 +1,21 @@
 package application
 
 import (
-	"fmt"
 	"job-tracker/internal/domain"
-	"time"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type JobService struct {
 	repository domain.JobRepository
+	log        *zap.Logger
 }
 
-func NewJobService(repository domain.JobRepository) *JobService {
+func NewJobService(repository domain.JobRepository, log *zap.Logger) *JobService {
 	return &JobService{
 		repository: repository,
+		log:        log,
 	}
 }
 
@@ -36,39 +37,53 @@ type UpdateJobRequest struct {
 }
 
 func (s *JobService) CreateJob(request *CreateJobRequest) (*domain.Job, error) {
+	s.log.Info("creating job")
 	job := domain.NewJob(request.Company, request.Position, request.Description, request.Salary, request.Remote)
 	err := s.repository.CreateJob(job)
 	if err != nil {
+		s.log.Error("failed to create job", zap.Error(err))
 		return nil, err
 	}
+	s.log.Info("job created",
+		zap.String("job_id", job.Id.String()),
+	)
 	return job, nil
 }
 
 func (s *JobService) UpdateJob(request *UpdateJobRequest) (*domain.Job, error) {
-	job, _ := s.repository.GetJobById(request.Id.String())
-	if job == nil {
-		return nil, fmt.Errorf("job not found")
-	}
-	job.Company = request.Company
-	job.Position = request.Position
-	job.Description = request.Description
-	job.Salary = request.Salary
-	job.Remote = request.Remote
-	job.UpdatedAt = time.Now()
-	err := s.repository.UpdateJob(job)
+	s.log.Info("updating job", zap.String("job_id", request.Id.String()))
+	job, err := s.repository.GetJobById(request.Id.String())
 	if err != nil {
+		s.log.Error("failed to get job to update", zap.Error(err))
+		return nil, domain.ErrJobNotFound
+	}
+	job.Update(request.Company, request.Position, request.Description, request.Salary, request.Remote)
+	err = s.repository.UpdateJob(job)
+	if err != nil {
+		s.log.Error("failed to update job", zap.Error(err))
 		return nil, err
 	}
+	s.log.Info("job updated",
+		zap.String("job_id", job.Id.String()),
+	)
 	return job, nil
 }
 
 func (s *JobService) DeleteJob(id uuid.UUID) error {
-	return s.repository.DeleteJob(id.String())
+	s.log.Info("deleting job", zap.String("job_id", id.String()))
+	err := s.repository.DeleteJob(id.String())
+	if err != nil {
+		s.log.Error("failed to delete job", zap.Error(err))
+		return err
+	}
+	s.log.Info("job deleted", zap.String("job_id", id.String()))
+	return nil
 }
 
 func (s *JobService) GetAllJobs() ([]*domain.Job, error) {
 	jobs, err := s.repository.GetAll()
 	if err != nil {
+		s.log.Error("failed to get all jobs", zap.Error(err))
 		return nil, err
 	}
 	return jobs, nil
@@ -77,7 +92,8 @@ func (s *JobService) GetAllJobs() ([]*domain.Job, error) {
 func (s *JobService) GetJob(id uuid.UUID) (*domain.Job, error) {
 	job, err := s.repository.GetJobById(id.String())
 	if err != nil {
-		return nil, err
+		s.log.Error("failed to get job", zap.Error(err))
+		return nil, domain.ErrJobNotFound
 	}
 	return job, nil
 }
@@ -85,6 +101,7 @@ func (s *JobService) GetJob(id uuid.UUID) (*domain.Job, error) {
 func (s *JobService) GetJobsByStatus(status string) ([]*domain.Job, error) {
 	jobs, err := s.repository.GetJobsByStatus(status)
 	if err != nil {
+		s.log.Error("failed to get jobs by status", zap.Error(err))
 		return nil, err
 	}
 	return jobs, nil

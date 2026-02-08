@@ -51,3 +51,12 @@ func NewJob(company string, position string, description string, salary int, rem
 		UpdatedAt:   time.Now(),
 	}
 }
+
+func (j *Job) Update(company string, position string, description string, salary int, remote bool) {
+	j.UpdatedAt = time.Now()
+	j.Company = company
+	j.Position = position
+	j.Description = description
+	j.Salary = salary
+	j.Remote = remote
+}

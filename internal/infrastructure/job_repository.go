@@ -42,7 +42,14 @@ func (r *JobRepositoryImpl) UpdateJob(job *domain.Job) error {
 }
 
 func (r *JobRepositoryImpl) DeleteJob(id string) error {
-	return r.db.Delete(&domain.Job{}, "id = ?", id).Error
+	result := r.db.Delete(&domain.Job{}, "id = ?", id)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return domain.ErrJobNotFound
+	}
+	return nil
 }
 
 func (r *JobRepositoryImpl) GetJobsByStatus(status string) ([]*domain.Job, error) {
