@@ -1,0 +1,259 @@
+{
+  "info": {
+    "_postman_id": "ad4526bd-9c72-4a84-ad95-d78f3136c730",
+    "name": "Go Job tracker",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "23080126"
+  },
+  "item": [
+    {
+      "name": "Get all jobs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/jobs",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/health",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get post by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/jobs/:id",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "468af31b-cc8f-4321-9c21-41d39628e0bc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get jobs by status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/jobs/status/:status",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs",
+            "status",
+            ":status"
+          ],
+          "variable": [
+            {
+              "key": "status",
+              "value": "PENDING"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete post by id",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/jobs/:id",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "468af31b-cc8f-4321-9c21-41d39628e0bb"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Job",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"company\": \"Amazon\",\r\n    \"position\": \"Senior Backend Engineer\",\r\n    \"description\": \"Go expert\",\r\n    \"salary\": 5000,\r\n    \"remote\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/jobs",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Create Job",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"company\": \"Amazon\",\r\n    \"position\": \"Senior Backend Engineer\",\r\n    \"description\": \"Go expert\",\r\n    \"salary\": 5000,\r\n    \"remote\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/jobs",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "jobs"
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
+    },
+    {
+      "name": "Update Job",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"id\": \"468af31b-cc8f-4321-9c21-41d39628e0bc\",\r\n    \"company\": \"Amazon\",\r\n    \"position\": \"Senior Go Backend Engineer\",\r\n    \"description\": \"Go expert\",\r\n    \"salary\": 5000,\r\n    \"remote\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/jobs",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "jobs"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Update Job",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"468af31b-cc8f-4321-9c21-41d39628e0bc\",\r\n    \"company\": \"Amazon\",\r\n    \"position\": \"Senior Go Backend Engineer\",\r\n    \"description\": \"Go expert\",\r\n    \"salary\": 5000,\r\n    \"remote\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/jobs",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "jobs"
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": ""
+    }
+  ]
+}

@@ -13,12 +13,13 @@ import (
 )
 
 //go:generate wire
-func InitJobHandler(db *gorm.DB) *infrastructure.JobHandler {
+func InitApp(db *gorm.DB) *App {
 	wire.Build(
 		logger.NewLogger,
 		infrastructure.NewJobRepository,
 		application.NewJobService,
 		infrastructure.NewJobHandler,
+		wire.Struct(new(App), "*"),
 	)
-	return &infrastructure.JobHandler{}
+	return nil
 }

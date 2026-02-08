@@ -25,6 +25,9 @@ func (h *JobHandler) RegisterRoutes(r *gin.Engine) {
 	r.PUT("/jobs", h.UpdateJob)
 	r.DELETE("/jobs/:id", h.DeleteJob)
 	r.GET("/jobs/status/:status", h.GetJobsByStatus)
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
 }
 
 func (h *JobHandler) GetJobs(c *gin.Context) {
