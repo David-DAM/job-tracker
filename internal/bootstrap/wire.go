@@ -6,16 +6,15 @@ package bootstrap
 import (
 	"job-tracker/internal/application"
 	"job-tracker/internal/infrastructure"
-	"job-tracker/internal/logger"
 
 	"github.com/google/wire"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 //go:generate wire
-func InitApp(db *gorm.DB) *App {
+func InitApp(logger *zap.Logger, db *gorm.DB) *App {
 	wire.Build(
-		logger.NewLogger,
 		infrastructure.NewJobRepository,
 		application.NewJobService,
 		infrastructure.NewJobHandler,

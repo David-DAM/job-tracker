@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"fmt"
-	"job-tracker/internal/config"
 	"log"
 	"time"
 
@@ -10,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDatabase(cfg config.Config) (*gorm.DB, error) {
+func NewDatabase(cfg Config) (*gorm.DB, error) {
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=UTC",

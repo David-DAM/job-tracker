@@ -1,4 +1,4 @@
-package config
+package bootstrap
 
 import (
 	"log"
@@ -13,6 +13,7 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+	AppName    string
 }
 
 func LoadConfig() Config {
@@ -31,6 +32,7 @@ func LoadConfig() Config {
 		DBUser:     viper.GetString("DB_USER"),
 		DBPassword: viper.GetString("DB_PASSWORD"),
 		DBName:     viper.GetString("DB_NAME"),
+		AppName:    viper.GetString("OTEL_SERVICE_NAME"),
 	}
 
 	if cfg.Port == 0 {
