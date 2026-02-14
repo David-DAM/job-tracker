@@ -31,7 +31,7 @@ func (h *JobHandler) RegisterRoutes(r *gin.Engine) {
 }
 
 func (h *JobHandler) GetJobs(c *gin.Context) {
-	jobs, err := h.service.GetAllJobs()
+	jobs, err := h.service.GetAllJobs(c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return
@@ -41,7 +41,7 @@ func (h *JobHandler) GetJobs(c *gin.Context) {
 
 func (h *JobHandler) GetJobsByStatus(c *gin.Context) {
 	status := c.Param("status")
-	jobs, err := h.service.GetJobsByStatus(status)
+	jobs, err := h.service.GetJobsByStatus(status, c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return
@@ -55,7 +55,7 @@ func (h *JobHandler) GetJob(c *gin.Context) {
 	if !ok {
 		return
 	}
-	job, err := h.service.GetJob(id)
+	job, err := h.service.GetJob(id, c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return
@@ -72,7 +72,7 @@ func (h *JobHandler) CreateJob(c *gin.Context) {
 		return
 	}
 
-	job, err := h.service.CreateJob(&request)
+	job, err := h.service.CreateJob(&request, c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return
@@ -86,7 +86,7 @@ func (h *JobHandler) UpdateJob(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: domain.ErrInvalidRequest.Error()})
 		return
 	}
-	job, err := h.service.UpdateJob(&request)
+	job, err := h.service.UpdateJob(&request, c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return
@@ -101,7 +101,7 @@ func (h *JobHandler) DeleteJob(c *gin.Context) {
 	if !ok {
 		return
 	}
-	err := h.service.DeleteJob(id)
+	err := h.service.DeleteJob(id, c.Request.Context())
 	isError := hasError(err, c)
 	if isError {
 		return

@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func InitLogs() (*zap.Logger, *log.LoggerProvider, error) {
@@ -25,8 +26,28 @@ func InitLogs() (*zap.Logger, *log.LoggerProvider, error) {
 		log.WithProcessor(log.NewBatchProcessor(exporter)),
 	)
 	global.SetLoggerProvider(loggerProvider)
-	logger := zap.New(
-		otelzap.NewCore("job-tracker", otelzap.WithLoggerProvider(loggerProvider)),
-	)
+	cfg := zap.Config{
+		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development:      true,
+		Encoding:         "json",
+		OutputPaths:      []string{"stdout"},
+		ErrorOutputPaths: []string{"stderr"},
+		EncoderConfig: zapcore.EncoderConfig{
+			TimeKey:        "timestamp",
+			LevelKey:       "level",
+			NameKey:        "logger",
+			MessageKey:     "message",
+			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			EncodeDuration: zapcore.MillisDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
+		},
+	}
+	baseLogger, _ := cfg.Build()
+
+	otelCore := otelzap.NewCore("job-tracker", otelzap.WithLoggerProvider(loggerProvider))
+
+	logger := zap.New(zapcore.NewTee(baseLogger.Core(), otelCore))
+
 	return logger, loggerProvider, nil
 }
