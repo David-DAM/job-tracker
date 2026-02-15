@@ -24,19 +24,31 @@ func Start() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer tracer.Shutdown(context.Background())
+	defer func() {
+		if err := tracer.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	metrics, err := InitMetrics()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer metrics.Shutdown(context.Background())
+	defer func() {
+		if err := metrics.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	logger, lp, err := InitLogs()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer lp.Shutdown(context.Background())
+	defer func() {
+		if err := lp.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	db, err := NewDatabase(cfg)
 	if err != nil {
@@ -60,8 +72,8 @@ func Start() error {
 			otelgin.WithTracerProvider(tracer),
 		),
 	)
-
 	app.JobHandler.RegisterRoutes(r)
+	RegisterStatus(r)
 
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	return r.Run(addr)

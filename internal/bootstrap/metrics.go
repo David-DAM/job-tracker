@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -20,5 +21,9 @@ func InitMetrics() (*sdkmetric.MeterProvider, error) {
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter)),
 	)
 	otel.SetMeterProvider(meterProvider)
+
+	if err := runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
+		return nil, err
+	}
 	return meterProvider, err
 }
