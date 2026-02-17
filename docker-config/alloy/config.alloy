@@ -125,7 +125,7 @@ otelcol.processor.batch "default" {
 otelcol.exporter.otlphttp "grafana_cloud" {
 	// https://grafana.com/docs/alloy/latest/reference/components/otelcol.exporter.otlphttp/
 	client {
-		endpoint = "https://otlp-gateway-prod-eu-central-0.grafana.net/otlp"
+		endpoint = env("GRAFANA_CLOUD_OTLP_ENDPOINT")
 		auth     = otelcol.auth.basic.grafana_cloud.handler
 	}
 }
@@ -137,7 +137,7 @@ otelcol.auth.basic "grafana_cloud" {
 }
 
 remotecfg {
-    url            = "https://fleet-management-prod-024.grafana.net"
+    url            = env("GRAFANA_CLOUD_FLEET_ENDPOINT")
     basic_auth     {
         username = env("GRAFANA_INSTANCE_ID")
         password = env("GCLOUD_RW_API_KEY")

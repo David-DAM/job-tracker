@@ -2,18 +2,15 @@ package domain
 
 import (
 	"context"
-
-	"go.uber.org/zap"
 )
 
-type Logger struct {
-	log *zap.Logger
+type Logger interface {
+	Info(ctx context.Context, msg string, fields ...Field)
+	Error(ctx context.Context, msg string, err error, fields ...Field)
+	Debug(ctx context.Context, msg string, fields ...Field)
 }
 
-func NewLogger(log *zap.Logger) *Logger {
-	return &Logger{log: log}
-}
-
-func (l *Logger) Ctx(ctx context.Context) *zap.Logger {
-	return l.log.With(zap.Any("context", ctx))
+type Field struct {
+	Key   string
+	Value any
 }

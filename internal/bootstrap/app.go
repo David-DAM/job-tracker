@@ -12,8 +12,15 @@ import (
 )
 
 type App struct {
-	Logger     *domain.Logger
+	Logger     domain.Logger
 	JobHandler *infrastructure.JobHandler
+}
+
+func NewApp(logger domain.Logger, jobHandler *infrastructure.JobHandler) *App {
+	return &App{
+		Logger:     logger,
+		JobHandler: jobHandler,
+	}
 }
 
 func Start() error {
