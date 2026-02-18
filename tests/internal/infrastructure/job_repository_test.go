@@ -24,7 +24,7 @@ func TestCreateAndGetJob(t *testing.T) {
 	db := setupTestDB(t)
 	repo := infrastructure.NewJobRepository(db)
 
-	job := domain.NewJob("Google", "Backend", "Go dev", 100000, true)
+	job := domain.NewJob("Google", "Backend", "Go dev", 100000, true, "")
 
 	err := repo.CreateJob(job)
 	assert.NoError(t, err)
@@ -40,8 +40,8 @@ func TestGetAllJobs(t *testing.T) {
 	db := setupTestDB(t)
 	repo := infrastructure.NewJobRepository(db)
 
-	job1 := domain.NewJob("Google", "Backend", "Go", 100, true)
-	job2 := domain.NewJob("Amazon", "Java", "Spring", 200, false)
+	job1 := domain.NewJob("Google", "Backend", "Go", 100, true, "")
+	job2 := domain.NewJob("Amazon", "Java", "Spring", 200, false, "")
 
 	_ = repo.CreateJob(job1)
 	_ = repo.CreateJob(job2)
@@ -56,7 +56,7 @@ func TestUpdateJob(t *testing.T) {
 	db := setupTestDB(t)
 	repo := infrastructure.NewJobRepository(db)
 
-	job := domain.NewJob("Google", "Backend", "Go", 100, true)
+	job := domain.NewJob("Google", "Backend", "Go", 100, true, "")
 	_ = repo.CreateJob(job)
 
 	job.Company = "Meta"
@@ -72,7 +72,7 @@ func TestDeleteJob(t *testing.T) {
 	db := setupTestDB(t)
 	repo := infrastructure.NewJobRepository(db)
 
-	job := domain.NewJob("Google", "Backend", "Go", 100, true)
+	job := domain.NewJob("Google", "Backend", "Go", 100, true, "")
 	_ = repo.CreateJob(job)
 
 	err := repo.DeleteJob(job.Id.String())

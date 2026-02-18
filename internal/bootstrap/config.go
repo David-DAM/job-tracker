@@ -16,16 +16,17 @@ type Config struct {
 	AppName    string
 }
 
-func LoadConfig() Config {
+func LoadConfig() (*Config, error) {
 	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Println("No .env file found, using system env")
+		return nil, err
 	}
 
-	cfg := Config{
+	cfg := &Config{
 		Port:       viper.GetInt("PORT"),
 		DBHost:     viper.GetString("DB_HOST"),
 		DBPort:     viper.GetInt("DB_PORT"),
@@ -39,5 +40,5 @@ func LoadConfig() Config {
 		cfg.Port = 8080
 	}
 
-	return cfg
+	return cfg, nil
 }

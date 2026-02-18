@@ -52,7 +52,7 @@ func (r *JobRepositoryImpl) DeleteJob(id string) error {
 	return nil
 }
 
-func (r *JobRepositoryImpl) GetJobsByStatus(status string) ([]*domain.Job, error) {
+func (r *JobRepositoryImpl) GetJobsByStatus(status domain.JobStatus) ([]*domain.Job, error) {
 	var jobs []*domain.Job
 	err := r.db.Where("status = ?", status).Find(&jobs).Error
 	if err != nil {

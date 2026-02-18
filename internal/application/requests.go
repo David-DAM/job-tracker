@@ -8,6 +8,7 @@ type CreateJobRequest struct {
 	Description string `json:"description" binding:"required,min=2"`
 	Salary      int    `json:"salary"`
 	Remote      bool   `json:"remote"`
+	Url         string `json:"url"`
 }
 
 type UpdateJobRequest struct {
@@ -17,4 +18,5 @@ type UpdateJobRequest struct {
 	Description string    `json:"description" binding:"required,min=2"`
 	Salary      int       `json:"salary"`
 	Remote      bool      `json:"remote"`
+	Url         string    `json:"url"`
 }

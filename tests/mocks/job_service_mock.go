@@ -38,7 +38,7 @@ func (m *JobRepositoryMock) DeleteJob(id string) error {
 	return args.Error(0)
 }
 
-func (m *JobRepositoryMock) GetJobsByStatus(status string) ([]*domain.Job, error) {
+func (m *JobRepositoryMock) GetJobsByStatus(status domain.JobStatus) ([]*domain.Job, error) {
 	args := m.Called(status)
 	return args.Get(0).([]*domain.Job), args.Error(1)
 }

@@ -56,7 +56,7 @@ func TestUpdateJob(t *testing.T) {
 		Remote:      true,
 	}
 
-	existingJob := domain.NewJob("OldCo", "OldPos", "OldDesc", 90000, false)
+	existingJob := domain.NewJob("OldCo", "OldPos", "OldDesc", 90000, false, "")
 	existingJob.Id = jobID
 
 	repo.On("GetJobById", jobID.String()).Return(existingJob, nil)
@@ -114,7 +114,7 @@ func TestGetJob(t *testing.T) {
 	repo, service := InitAppTest()
 
 	jobID := uuid.New()
-	existingJob := domain.NewJob("Google", "Backend", "Go dev", 100000, true)
+	existingJob := domain.NewJob("Google", "Backend", "Go dev", 100000, true, "")
 	existingJob.Id = jobID
 
 	repo.On("GetJobById", jobID.String()).Return(existingJob, nil)
@@ -143,8 +143,8 @@ func TestGetAllJobs(t *testing.T) {
 	repo, service := InitAppTest()
 
 	jobs := []*domain.Job{
-		domain.NewJob("A", "X", "desc", 1, false),
-		domain.NewJob("B", "Y", "desc", 2, true),
+		domain.NewJob("A", "X", "desc", 1, false, ""),
+		domain.NewJob("B", "Y", "desc", 2, true, ""),
 	}
 
 	repo.On("GetAll").Return(jobs, nil)
@@ -159,9 +159,9 @@ func TestGetJobsByStatus(t *testing.T) {
 
 	repo, service := InitAppTest()
 
-	status := "open"
+	status := domain.JobStatusOpen
 	jobs := []*domain.Job{
-		domain.NewJob("A", "X", "desc", 1, false),
+		domain.NewJob("A", "X", "desc", 1, false, ""),
 	}
 	repo.On("GetJobsByStatus", status).Return(jobs, nil)
 
@@ -174,7 +174,7 @@ func TestGetJobsByStatus(t *testing.T) {
 func TestGetJobsByStatus_Error(t *testing.T) {
 
 	repo, service := InitAppTest()
-	status := "open"
+	status := domain.JobStatusOpen
 	repo.On("GetJobsByStatus", status).Return([]*domain.Job{}, errors.New("db error"))
 
 	result, err := service.GetJobsByStatus(status, context.Background())

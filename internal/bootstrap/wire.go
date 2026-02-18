@@ -17,6 +17,7 @@ func InitApp(logger *zap.Logger, db *gorm.DB) *App {
 	wire.Build(
 		infrastructure.NewLoggerZap,
 		infrastructure.NewJobRepository,
+		infrastructure.NewJobScrapper,
 		application.NewJobService,
 		infrastructure.NewJobHandler,
 		NewApp,

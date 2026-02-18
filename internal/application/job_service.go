@@ -21,7 +21,7 @@ func NewJobService(repository domain.JobRepository, log domain.Logger) *JobServi
 
 func (s *JobService) CreateJob(request *CreateJobRequest, ctx context.Context) (*domain.Job, error) {
 	s.log.Info(ctx, "creating job")
-	job := domain.NewJob(request.Company, request.Position, request.Description, request.Salary, request.Remote)
+	job := domain.NewJob(request.Company, request.Position, request.Description, request.Salary, request.Remote, request.Url)
 	err := s.repository.CreateJob(job)
 	if err != nil {
 		s.log.Error(ctx, "failed to create job", err)
@@ -38,7 +38,7 @@ func (s *JobService) UpdateJob(request *UpdateJobRequest, ctx context.Context) (
 		s.log.Error(ctx, "failed to get job to update", err)
 		return nil, domain.ErrJobNotFound
 	}
-	job.Update(request.Company, request.Position, request.Description, request.Salary, request.Remote)
+	job.Update(request.Company, request.Position, request.Description, request.Salary, request.Remote, request.Url)
 	err = s.repository.UpdateJob(job)
 	if err != nil {
 		s.log.Error(ctx, "failed to update job", err)
@@ -77,7 +77,7 @@ func (s *JobService) GetJob(id uuid.UUID, ctx context.Context) (*domain.Job, err
 	return job, nil
 }
 
-func (s *JobService) GetJobsByStatus(status string, ctx context.Context) ([]*domain.Job, error) {
+func (s *JobService) GetJobsByStatus(status domain.JobStatus, ctx context.Context) ([]*domain.Job, error) {
 	jobs, err := s.repository.GetJobsByStatus(status)
 	if err != nil {
 		s.log.Error(ctx, "failed to get jobs by status", err)
