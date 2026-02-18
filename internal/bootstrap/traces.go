@@ -10,9 +10,10 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func InitTracer() (*sdktrace.TracerProvider, error) {
+func InitTracer() (trace.TracerProvider, *sdktrace.TracerProvider, error) {
 	client := otlptracehttp.NewClient(
 		otlptracehttp.WithEndpoint("localhost:4318"),
 		otlptracehttp.WithInsecure(),
@@ -21,15 +22,16 @@ func InitTracer() (*sdktrace.TracerProvider, error) {
 	)
 	exporter, err := otlptrace.New(context.Background(), client)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 		sdktrace.WithBatcher(exporter),
 	)
-	otel.SetTracerProvider(otelpyroscope.NewTracerProvider(tp))
+	enhancedTracerProvider := otelpyroscope.NewTracerProvider(tp)
+	otel.SetTracerProvider(enhancedTracerProvider)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{}, propagation.Baggage{}))
-	return tp, err
+	return enhancedTracerProvider, tp, err
 }

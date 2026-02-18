@@ -53,13 +53,13 @@ func Start() error {
 		}
 	}()
 
-	tracer, err := InitTracer()
+	tracer, tp, err := InitTracer()
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	defer func() {
-		if err := tracer.Shutdown(context.Background()); err != nil {
+		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Fatal(err)
 		}
 	}()
