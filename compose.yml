@@ -29,6 +29,7 @@ services:
     ports:
       - "4317:4317"   # OTEL gRPC
       - "4318:4318"   # OTEL HTTP
+      - "9999:9999"   # Pyroscope HTTP
       - "12345:12345" # Alloy HTTP
     command:
       - run

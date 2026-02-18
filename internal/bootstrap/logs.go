@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func InitLogs() (*zap.Logger, *log.LoggerProvider, error) {
+func InitLogs(config *Config) (*zap.Logger, *log.LoggerProvider, error) {
 	exporter, err := otlploghttp.New(
 		context.Background(),
 		otlploghttp.WithEndpoint("localhost:4318"),
@@ -45,7 +45,7 @@ func InitLogs() (*zap.Logger, *log.LoggerProvider, error) {
 	}
 	baseLogger, _ := cfg.Build()
 
-	otelCore := otelzap.NewCore("job-tracker", otelzap.WithLoggerProvider(loggerProvider))
+	otelCore := otelzap.NewCore(config.AppName, otelzap.WithLoggerProvider(loggerProvider))
 
 	logger := zap.New(zapcore.NewTee(baseLogger.Core(), otelCore))
 

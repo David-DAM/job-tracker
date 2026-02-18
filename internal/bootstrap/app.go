@@ -37,7 +37,12 @@ func Start() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	logger, lp, err := InitLogs()
+	config, err := LoadConfig()
+	if err != nil {
+		return err
+	}
+
+	logger, lp, err := InitLogs(config)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -70,11 +75,18 @@ func Start() error {
 		}
 	}()
 
-	config, err := LoadConfig()
+	profile, err := InitProfile(config)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	db, err := NewDatabase(config)
+	defer func() {
+		if err := profile.Stop(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	db, err := InitDatabase(config)
 	if err != nil {
 		return err
 	}
